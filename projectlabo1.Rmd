@@ -328,7 +328,33 @@ YOUR ANALYSIS HERE
 
 8.a. 
 ```{r, cache=TRUE} 
-# YOUR CODE HERE
+#Joining the components table in a new variable:
+
+
+joined_comp <- merge(components,joined_table,by = "Country")
+
+#changing the titles of 5 columns that we'll need :
+
+colnames(joined_comp)[colnames(joined_comp) == "Elec.toral.pro.cessand.plura.lism"] <- "Electoral_processand_pluralism"
+colnames(joined_comp)[colnames(joined_comp) == "Func.tioningof.govern.ment"] <- "Functioning_of_government"
+colnames(joined_comp)[colnames(joined_comp) == "Poli.ticalpartici.pation"] <- "Political_participation"
+colnames(joined_comp)[colnames(joined_comp) == "Poli.ticalcul.ture"] <- "Political_culture"
+colnames(joined_comp)[colnames(joined_comp) == "Civilliber.ties"] <- "Civil_liberties"
+
+#Show the first 5
+head(joined_comp,5)
+
+#calculate the correlations between those 
+
+selected_columns <- select(joined_comp,Electoral_processand_pluralism, Functioning_of_government, 
+                      Political_participation, Political_culture, Civil_liberties)
+
+selected_columns <- as.data.frame(lapply(selected_columns, as.numeric))
+
+cor_matrix <- cor(selected_columns)
+
+corrplot(cor_matrix, method = "color", type = "upper", 
+         tl.col = "black", tl.srt = 45)
 ```
 
 YOUR ANALYSIS HERE
@@ -336,7 +362,30 @@ YOUR ANALYSIS HERE
 
 8.b. 
 ```{r, cache=TRUE} 
-# YOUR CODE HERE
+
+# Fit the multiple linear regression model
+reg_model <- lm(CIA.est ~ Electoral_processand_pluralism + Functioning_of_government + Political_participation + Political_culture + Civil_liberties, data = joined_comp)
+
+# Display the summary of the regression analysis
+summary(reg_model)
+
+
+# Get the residuals from the regression model
+residuals <- resid(reg_model)
+
+# Create a data frame with country names and residuals
+country_residuals <- data.frame(Country = joined_comp$Country, Residuals = residuals)
+
+# Sort the data frame by absolute residuals
+sorted_residuals <- country_residuals[order(abs(country_residuals$Residuals), decreasing = TRUE), ]
+
+# Display the top 5 countries with the highest and lowest residuals
+top_outliers <- head(sorted_residuals, 5)
+bottom_outliers <- tail(sorted_residuals, 5)
+
+# Display the table of outliers
+outliers_table <- rbind(top_outliers, bottom_outliers)
+#print(outliers_table)
 ```
 
 YOUR ANALYSIS HERE
