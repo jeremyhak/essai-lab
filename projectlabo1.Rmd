@@ -318,7 +318,32 @@ YOUR ANALYSIS HERE
 
 7 
 ```{r, cache=TRUE} 
-# YOUR CODE HERE
+#select the country names and from year 2006 till 2022
+avg_table <- select(list_by_country,Country,c(5:19))
+
+#create a new empty column to store the average for each country 
+avg_table$avg <- NA
+row_sums <- rowSums(avg_table[, c(2:16)])
+#enter and calculate averages for each country 
+avg_table$avg <- row_sums/15
+
+world_map <- joinCountryData2Map(avg_table, joinCode = "NAME", nameJoinColumn = "Country")
+
+#The world map with color based on average value
+mapCountryData(world_map, nameColumnToPlot = "avg", mapTitle = "Average Value",
+               catMethod = "fixedWidth", numCats = 10, missingCountryCol = "white", addLegend = TRUE, oceanCol = "lightblue")
+
+
+
+table_2006 <- select(list_by_country,Country,c(19))
+mapCountryData(world_map, nameColumnToPlot = "X2006", mapTitle = "2006 Values",
+               catMethod = "fixedWidth", numCats = 10, missingCountryCol = "white", addLegend = TRUE, oceanCol = "lightblue")
+
+
+table_2022 <- select(list_by_country,Country,c(5))
+table_2006 <- select(list_by_country,Country,c(19))
+mapCountryData(world_map, nameColumnToPlot = "X2022", mapTitle = "2022 Values",
+               catMethod = "fixedWidth", numCats = 10, missingCountryCol = "white", addLegend = TRUE, oceanCol = "lightblue")
 ```
 
 YOUR ANALYSIS HERE
